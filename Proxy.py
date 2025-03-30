@@ -177,7 +177,7 @@ while True:
         data = originServerSocket.recv(BUFFER_SIZE)
         if not data:
           break
-      response += data
+        response += data
       # ~~~~ END CODE INSERT ~~~~
 
       # Send the response to the client
