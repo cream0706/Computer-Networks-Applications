@@ -130,6 +130,7 @@ while True:
     # Create a socket to connect to origin server
     # and store in originServerSocket
     # ~~~~ INSERT CODE ~~~~
+    originServerSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Create a TCP socket to connect to the source server
     # ~~~~ END CODE INSERT ~~~~
 
     print ('Connecting to:\t\t' + hostname + '\n')
@@ -138,6 +139,7 @@ while True:
       address = socket.gethostbyname(hostname)
       # Connect to the origin server
       # ~~~~ INSERT CODE ~~~~
+      originServerSocket.connect((address, 80)) # Connect to the target host's port 80 (HTTP default port)
       # ~~~~ END CODE INSERT ~~~~
       print ('Connected to origin Server')
 
@@ -148,6 +150,8 @@ while True:
       # originServerRequest is the first line in the request and
       # originServerRequestHeader is the second line in the request
       # ~~~~ INSERT CODE ~~~~
+      originServerRequest = f"GET {resource} HTTP/1.1" # Constructing a request line
+      originServerRequestHeader = f"Host: {hostname}\r\nConnection: close" # Add Host header and close connection flag
       # ~~~~ END CODE INSERT ~~~~
 
       # Construct the request to send to the origin server
@@ -168,10 +172,17 @@ while True:
 
       # Get the response from the origin server
       # ~~~~ INSERT CODE ~~~~
+      response = b''
+      while True:
+        data = originServerSocket.recv(BUFFER_SIZE)
+        if not data:
+          break
+      response += data
       # ~~~~ END CODE INSERT ~~~~
 
       # Send the response to the client
       # ~~~~ INSERT CODE ~~~~
+      clientSocket.sendall(response) # Send the complete response received from the origin server to the client
       # ~~~~ END CODE INSERT ~~~~
 
       # Create a new file in the cache for the requested file.
@@ -183,6 +194,7 @@ while True:
 
       # Save origin server response in the cache file
       # ~~~~ INSERT CODE ~~~~
+      cacheFile.write(response) # Write the response content to the cache file (in binary mode)
       # ~~~~ END CODE INSERT ~~~~
       cacheFile.close()
       print ('cache file closed')
